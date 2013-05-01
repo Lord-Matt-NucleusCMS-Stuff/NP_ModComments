@@ -142,8 +142,6 @@ class NP_ModComments extends NucleusPlugin {
          */
 	function doTemplateCommentsVar($item, $comment, $param1){
 		global $CONF, $member;
- 
-                echo "<b>DEBUG: $param1</b>";
                 
 		switch ($param1) {
 			case 'form':
@@ -185,7 +183,7 @@ class NP_ModComments extends NucleusPlugin {
 				break;			
 			case 'score':
 				$result = sql_query('SELECT sum(`score`) as `score` FROM `' . sql_table('plugin_modcomments') . '` WHERE `commentid`=' . $comment['commentid']);
-				$score = mysql_result($result, 'score');
+				$score = mysql_result($result, 1);
 				if ($score) {
 					echo $score;
 				} else {
@@ -194,7 +192,7 @@ class NP_ModComments extends NucleusPlugin {
 				break;
 			case 'votes':
 				$result = sql_query('SELECT count(*) as `votes` FROM `' . sql_table('plugin_modcomments') . '` WHERE `commentid`=' . $comment['commentid']);
-				echo mysql_result($result, 'votes');
+				echo mysql_result($result, 1);
 				break;
 		}
  
@@ -224,21 +222,21 @@ class NP_ModComments extends NucleusPlugin {
  
 		if ($modvalue != -1) {
 			$modscore = $this->mod[$modvalue]['score'];
-                        $sql ='SELECT * FROM `' . sql_table('plugin_modcomments') . '` WHERE `commentid`=\'$commentid\' AND `modid`=\'$modid\';';
+                        $sql ="SELECT * FROM `" . sql_table('plugin_modcomments') . "` WHERE `commentid`='$commentid' AND `modid`='$modid';";
 			// Check to see if member has already moderated the given comment
                         
-                        echo $sql;
+                        //echo $sql;
 			$result = sql_query($sql);
 			if (mysql_num_rows($result) == 0) {	
 				// Also check to see if a user doesn't try to vote on his own comments
 				if ($memberid != $modid) {
-                                        $sql = 'INSERT INTO `' . sql_table('plugin_modcomments') . '` (`commentid`, `modid`, `score`) VALUES (\'$commentid\', \'$modid\', \'$modscore\');';
-                                        echo $sql;
+                                        $sql = 'INSERT INTO `' . sql_table('plugin_modcomments') . "` (`commentid`, `modid`, `score`) VALUES ('$commentid', '$modid', '$modscore');";
+                                        //echo $sql;
 					sql_query($sql);
 				}
 			}
 		}
-
+                echo 'ref: ', $HTTP_REFERER;
 		header("Location: $HTTP_REFERER");
                 exit();
  
