@@ -254,8 +254,12 @@ class NP_ModComments extends NucleusPlugin {
          * @param type $commentid 
          */
         function ModGetVotes($commentid){
-            $result = sql_query('SELECT count(*) as `votes` FROM `' . sql_table('plugin_modcomments') . '` WHERE `commentid`=' . $commentid);
-            return mysql_result($result, 0. 'votes');
+            $sql = 'SELECT count(*) as `votes` FROM `' . 
+                    sql_table('plugin_modcomments') . 
+                    '` WHERE `commentid`=' . 
+                    $commentid;
+            $result = sql_query($sql);
+            return mysql_result($result, 0, 'votes');
         }
         
         /**
