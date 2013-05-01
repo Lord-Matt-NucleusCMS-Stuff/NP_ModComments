@@ -166,30 +166,15 @@ class NP_ModComments extends NucleusPlugin {
 				}
 				break;
 			case 'top':
-				$result = sql_query('SELECT `score`, count(`score`) as count FROM `' . sql_table('plugin_modcomments') . '` WHERE `commentid`=' . $comment['commentid'] . ' GROUP BY `score` ORDER BY `count` DESC;');
- 
-				if (mysql_num_rows($result) >= 1) {
-					$score = mysql_result($result,'score');
-				} else {
-					echo 'none';
-				}
- 
-				for($i=0;$i<count($this->mod);$i++) {
-					if ($this->mod[$i]['score'] == $score) {
-						echo $this->mod[$i]['name'];
-					}
-				}
- 
+				echo $this->ModGetTop($comment['commentid']);
 				break;			
 			case 'score':
 				echo $this->ModGetScore($comment['commentid']);
 				break;
 			case 'votes':
-				$result = sql_query('SELECT count(*) as `votes` FROM `' . sql_table('plugin_modcomments') . '` WHERE `commentid`=' . $comment['commentid']);
-				echo mysql_result($result, 1);
+				echo $this->ModGetVotes($comment['commentid']);
 				break;
 		}
- 
 	}
  
         /**
@@ -236,19 +221,59 @@ class NP_ModComments extends NucleusPlugin {
  
 	}	
  
+        /**
+         * API to get the most voted reason
+         * @param type $commentid
+         * @return boolean 
+         */
+        function ModGetTop($commentid){
+            $sql = 'SELECT `score`, count(`score`) as count FROM `' . 
+                    sql_table('plugin_modcomments') . 
+                    '` WHERE `commentid`=' . 
+                    $commentid .
+                    ' GROUP BY `score` ORDER BY `count` DESC;';
+            $result = sql_query($sql);
+ 
+            if (mysql_num_rows($result) > 0) {
+                    $score = mysql_result($result,0,'score');
+            } else {
+                    return false;
+            }
+
+            for($i=0;$i<count($this->mod);$i++) {
+                    if ($this->mod[$i]['score'] == $score) {
+                            return $this->mod[$i]['name'];
+                    }
+            }
+            
+            return false;
+        } 
+       
+        /** 
+         * API to get the number of votes
+         * @param type $commentid 
+         */
+        function ModGetVotes($commentid){
+            $result = sql_query('SELECT count(*) as `votes` FROM `' . sql_table('plugin_modcomments') . '` WHERE `commentid`=' . $commentid);
+            return mysql_result($result, 0. 'votes');
+        }
         
+        /**
+         * API to get the score
+         * @param type $commentid
+         * @return int 
+         */
         function ModGetScore($commentid){
             $sql ='SELECT sum(`score`) as `score` FROM `' . 
                     sql_table('plugin_modcomments') . 
                     '` WHERE `commentid`=' . $commentid;
             $result = sql_query($sql);
-                if(mysql_num_rows($result)>0){
-                    $row = mysql_result($result);
-                    $score = $row[0];
-                } else {
-                    $score=0;
-                }
-                return $score;
+            if(mysql_num_rows($result)>0){
+                $score = mysql_result($result,0,'score');
+            } else {
+                $score=0;
+            }
+            return $score;
         }
 }
 
