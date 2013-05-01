@@ -1,0 +1,85 @@
+<h3>NP_ModComments overview</h3>
+
+<p>Allows you to add a comment moderation system (like the one on /. to your site).
+This plugin offered the core functionality and Tim (the original author) hoped that, later on,
+ he (or other people) could make
+plugins that depend on this one (like: calculating a member's score, hiding troll comments, etc)</p>
+
+
+
+
+<h3>Installation</h3>
+<p>Simply upload to the plugin folder in the usual way. 
+    Then visit the admin area and select the plugin for installation.</p>
+
+<p>There is a community hosted FAQ on installing plugins that can be found <a href="http://faq.nucleuscms.org/item/35">here</a>.</p>
+
+
+<h3>TemplateVars</h3>
+
+<ol>
+    <li><b>&lt;%ModComments(form)%></b> Shows the moderation box. Goes in the comment header/body/footer template part.</li>
+    <li><b>&lt;%ModComments(top)%></b> Shows the most chosen moderation class.</li>
+    <li><b>&lt;%ModComments(score)%></b> Shows the score. score is the sum of all scores given.</li>
+    <li><b>&lt;%ModComments(votes)%></b> Shows the number of votes.</li>
+</ol>
+	
+
+<h3>Support and Bug reports</h3>
+
+ 
+<p><b>Tim Wrote:</b> <q>When you find a bug or have a certain feature request you can always contact me at 
+sirtim@fuckhedz.com or (till MS closes down their IM network to GAIM users) on MSN (sirpsycho@fuckhedz.com)</q></p>
+
+<p>However it would probably not be fair to bug Tim over this newly revised version of his code. 
+You can leave bug reports <a href="https://github.com/Lord-Matt-NucleusCMS-Stuff/NP_ModComments/issues">here</a>.
+You can also <a href="https://github.com/Lord-Matt-NucleusCMS-Stuff/NP_ModComments">fork the code on Git Hub</a>.</p>
+
+
+
+<h3>Version History</h3>
+
+<ul><li>Version 2.0.0: New Version by Matt</li>
+<li>Version 1.0a: initial version by Tim</li></ul>
+            
+
+<h3>Notes</h3>
+<p>These notes are from the v1.0a code.</p>
+<pre> 
+Quick Reference
+----------------
+ 
+** SETUP **
+  There are no options to set but you can configure this plugin very well by 
+	editing this file.
+ 
+	1) Setting the different moderation classes:
+ 
+		Scroll down this file untill you find the function NP_ModComments. You will see a
+		list of the currently enabled moderation classes.
+ 
+		The structure is quite easy:
+ 
+		$this->mod[0]['name'] = 'example name';
+		$this->mod[0]['score'] = 5;
+ 
+		As you see the moderation classes all have a number (in the example above it's 0).
+		When you want to add another class you have to give it the next number. So, when
+		the last moderation class in the list has number 7 the next one will have to have
+		number 8 ($this->mod[8]['name'] = ...). I hope you get the idea.
+ 
+		The score needs to be unique. No two moderation classes can have the same score.
+ 
+	2) Showing a message to non-members:
+ 
+		You can only vote when you are a member. By default people who are not a member of
+		your weblog will simply not see the moderationbox. If you want them to see a message
+		like 'Sorry, only members can moderate comments' you have to remove the // on line 156
+
+ 
+
+ 
+</pre>
+                <p>I hope you enjoy this plugin!</p>
+ 
+<p>Tim</p>
