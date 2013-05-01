@@ -2,13 +2,14 @@
 /**
  * Output differnt text depending on moderation values.
  */
+
 if (!function_exists('sql_table'))
 {
 	function sql_table($name) {
 		return 'nucleus_' . $name;
 	}
 }
- 
+
 class NP_ModThresholdWord extends NucleusPlugin {
  
 	var $mod;
@@ -71,19 +72,28 @@ class NP_ModThresholdWord extends NucleusPlugin {
         }
         
         function doTemplateCommentsVar($item, $comment){
-		global $MANAGER;
                 error_reporting(E_ALL);
-                $ModComments = $MANAGER->getPlugin('ModComments');
-                
-                $value = $ModComments->ModGetScore($comment['commentid']);
-                
-                if($value > $this->getOption('Golden')){
-                    echo $this->getOption('GoldenWord');
-                }elseif ($value < $this->getOption('Blacken')) {
-                    echo $this->getOption('BlackenWord');
+                $MANAGER = MANAGER::instance();
+                //echo "<b>STARTING</b>\n";
+                $ModComments  =&  $MANAGER->getPlugin('NP_ModComments');
+                //echo "<b>TESTING</b>\n";
+                if(is_object($ModComments)){
+
+                    $cc = $comment['commentid'];
+                    $value = $ModComments->ModGetScore($cc);
+
+                    if($value > $this->getOption('Golden')){
+                        echo $this->getOption('GoldenWord');
+                    }elseif ($value < $this->getOption('Blacken')) {
+                        echo $this->getOption('BlackenWord');
+                    }else{
+                        echo $this->getOption('NormalWord');
+                    }
                 }else{
-                    echo $this->getOption('NormalWord');
+                    // nudda
+                    echo "nope";
                 }
+                
                 
         }
 }
