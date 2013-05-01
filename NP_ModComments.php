@@ -215,8 +215,7 @@ class NP_ModComments extends NucleusPlugin {
 				}
 			}
 		}
-                echo 'ref: ', $HTTP_REFERER;
-		header("Location: $HTTP_REFERER");
+		header("Location:  $_SERVER['HTTP_REFERER'] ");
                 exit();
  
 	}	
