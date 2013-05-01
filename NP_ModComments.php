@@ -40,13 +40,19 @@ class NP_ModComments extends NucleusPlugin {
 	}
  
 	function getVersion() {
-		return '2.0.0'; 
+		return '2.0.1'; 
 	}
  
 	function getDescription() { 
 		return 'A plugin that allows logged in users to moderate comments.';
 	}
  
+        function getTableList() { 
+            return array( 
+                    sql_table('plugin_modcomments')
+            ); 
+        }
+        
         /**
          * Installs the table needed. 
          * NOTE: If the table already exists the table will need to be updaated
