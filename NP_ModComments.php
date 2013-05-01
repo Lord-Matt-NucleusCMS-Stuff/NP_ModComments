@@ -28,7 +28,7 @@ class NP_ModComments extends NucleusPlugin {
 	var $mod;
  
 	function getName() {
-		return 'Meta-Moderation for comments plugin'; 
+		return 'ModComments'; 
 	}
  
 	function getAuthor()  { 
@@ -44,7 +44,8 @@ class NP_ModComments extends NucleusPlugin {
 	}
  
 	function getDescription() { 
-		return 'A plugin that allows logged in users to moderate comments.';
+		return 'Meta-Moderation for comments plugin. A plugin that 
+                    allows logged in users to moderate comments.';
 	}
  
         function getTableList() { 
@@ -191,7 +192,7 @@ class NP_ModComments extends NucleusPlugin {
          */
 	function doAction($actionType) {
 		global $member, $HTTP_REFERER;;
-                error_reporting(E_ALL);
+                
 		$modvalue = requestVar('modcommentsselect');
 		$modvalue = mysql_real_escape_string($modvalue);
  
