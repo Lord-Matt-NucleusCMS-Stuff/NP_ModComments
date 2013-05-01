@@ -9,7 +9,7 @@ if (!function_exists('sql_table'))
 	}
 }
  
-class NP_ModThesholdWord extends NucleusPlugin {
+class NP_ModThresholdWord extends NucleusPlugin {
  
 	var $mod;
  
