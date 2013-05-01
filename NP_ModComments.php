@@ -127,7 +127,11 @@ class NP_ModComments extends NucleusPlugin {
                 parent::init();
 
         }
- 
+
+        
+        function doTemplateVar($item, $type='', $param1 = 'default value'){
+            echo "<p><b>Error</b> The tempalte tag does not go here.</p>";
+        }
         /**
          * This function remains largely unedited.
          * @global array $CONF
@@ -136,7 +140,7 @@ class NP_ModComments extends NucleusPlugin {
          * @param object $comment
          * @param string $param1 
          */
-	function doTemplateCommentsVar(&$item, &$comment, $param1){
+	function doTemplateCommentsVar($item, $comment, $param1){
 		global $CONF, $member;
  
                 echo "<b>DEBUG: $param1</b>";
@@ -204,7 +208,7 @@ class NP_ModComments extends NucleusPlugin {
          */
 	function doAction($actionType) {
 		global $member, $HTTP_REFERER;;
- 
+                error_reporting(E_ALL);
 		$modvalue = requestVar('modcommentsselect');
 		$modvalue = mysql_real_escape_string($modvalue);
  
@@ -220,18 +224,23 @@ class NP_ModComments extends NucleusPlugin {
  
 		if ($modvalue != -1) {
 			$modscore = $this->mod[$modvalue]['score'];
- 
+                        $sql ='SELECT * FROM `' . sql_table('plugin_modcomments') . '` WHERE `commentid`=\'$commentid\' AND `modid`=\'$modid\';';
 			// Check to see if member has already moderated the given comment
-			$result = sql_query('SELECT * FROM `' . sql_table('plugin_modcomments') . '` WHERE `commentid`=\'$commentid\' AND `modid`=\'$modid\';');
+                        
+                        echo $sql;
+			$result = sql_query($sql);
 			if (mysql_num_rows($result) == 0) {	
 				// Also check to see if a user doesn't try to vote on his own comments
 				if ($memberid != $modid) {
-					sql_query('INSERT INTO `' . sql_table('plugin_modcomments') . '` (`commentid`, `modid`, `score`) VALUES (\'$commentid\', \'$modid\', \'$modscore\');');
+                                        $sql = 'INSERT INTO `' . sql_table('plugin_modcomments') . '` (`commentid`, `modid`, `score`) VALUES (\'$commentid\', \'$modid\', \'$modscore\');';
+                                        echo $sql;
+					sql_query($sql);
 				}
 			}
 		}
- 
-		header("Location: $HTTP_REFERER");	
+
+		header("Location: $HTTP_REFERER");
+                exit();
  
 	}	
  
