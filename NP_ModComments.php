@@ -182,13 +182,7 @@ class NP_ModComments extends NucleusPlugin {
  
 				break;			
 			case 'score':
-				$result = sql_query('SELECT sum(`score`) as `score` FROM `' . sql_table('plugin_modcomments') . '` WHERE `commentid`=' . $comment['commentid']);
-				$score = mysql_result($result, 1);
-				if ($score) {
-					echo $score;
-				} else {
-					echo '0';
-				}
+				echo $this->ModGetScore($comment['commentid']);
 				break;
 			case 'votes':
 				$result = sql_query('SELECT count(*) as `votes` FROM `' . sql_table('plugin_modcomments') . '` WHERE `commentid`=' . $comment['commentid']);
@@ -242,5 +236,19 @@ class NP_ModComments extends NucleusPlugin {
  
 	}	
  
+        
+        function ModGetScore($commentid){
+            $sql ='SELECT sum(`score`) as `score` FROM `' . 
+                    sql_table('plugin_modcomments') . 
+                    '` WHERE `commentid`=' . $commentid;
+            $result = sql_query($sql);
+                if(mysql_num_rows($result)>0){
+                    $row = mysql_result($result);
+                    $score = $row[0];
+                } else {
+                    $score=0;
+                }
+                return $score;
+        }
 }
 
