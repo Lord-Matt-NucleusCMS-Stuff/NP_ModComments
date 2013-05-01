@@ -14,7 +14,7 @@ class NP_ModThresholdWord extends NucleusPlugin {
 	var $mod;
  
 	function getName() {
-		return 'Uses ModComment to set output for specific cases'; 
+		return 'Mod Threshold Word'; 
 	}
  
 	function getAuthor()  { 
@@ -30,7 +30,8 @@ class NP_ModThresholdWord extends NucleusPlugin {
 	}
  
 	function getDescription() { 
-		return 'Nest used to set a CSS class name. This plugin will 
+		return 'Uses ModComment to set output for specific cases. 
+                    Best used to set a CSS class name. This plugin will 
                     output one of three values depending on moderation levels.
                     They roughly equate to good, bad and indifferent.';
 	}
@@ -71,7 +72,7 @@ class NP_ModThresholdWord extends NucleusPlugin {
         
         function doTemplateCommentsVar($item, $comment){
 		global $MANAGER;
-                
+                error_reporting(E_ALL);
                 $ModComments = $MANAGER->getPlugin('ModComments');
                 
                 $value = $ModComments->ModGetScore($comment['commentid']);
