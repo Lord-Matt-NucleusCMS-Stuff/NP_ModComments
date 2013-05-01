@@ -139,6 +139,8 @@ class NP_ModComments extends NucleusPlugin {
 	function doTemplateCommentsVar(&$item, &$comment, $param1){
 		global $CONF, $member;
  
+                echo "<b>DEBUG: $param1</b>";
+                
 		switch ($param1) {
 			case 'form':
 				if ($member->isLoggedIn()) {
