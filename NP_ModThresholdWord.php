@@ -80,11 +80,10 @@ class NP_ModThresholdWord extends NucleusPlugin {
                 if(is_object($ModComments)){
 
                     $cc = $comment['commentid'];
-                    $value = $ModComments->ModGetScore($cc);
-
-                    if($value > $this->getOption('Golden')){
+                    $value = (int) $ModComments->ModGetScore($cc);
+                    if($value >= $this->getOption('Golden')){
                         echo $this->getOption('GoldenWord');
-                    }elseif ($value < $this->getOption('Blacken')) {
+                    }elseif ($value <= $this->getOption('Blacken')) {
                         echo $this->getOption('BlackenWord');
                     }else{
                         echo $this->getOption('NormalWord');
