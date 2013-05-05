@@ -1,6 +1,10 @@
 <?php
 /**
 NP_ModComments:
+ * 
+ *                       ** PHP 5.x ONLY ** 
+ * Now caches data for added speed and less SQL socket use 
+ * New mean average scores option
  
 Allows you to add a comment moderation system (like the one on /. to your site).
 This plugin offers the core functionality, later on I (or other people) can make
@@ -25,30 +29,33 @@ if (!function_exists('sql_table'))
  
 class NP_ModComments extends NucleusPlugin {
  
-	var $mod;
+	protected $mod;
+        
+        protected $commentCache = array();
  
-	function getName() {
+	public function getName() {
 		return 'ModComments'; 
 	}
  
-	function getAuthor()  { 
+	public function getAuthor()  { 
 		return 'Lord Matt based on work by Tim Broddin'; 
 	}
  
-	function getURL()	{
+	public function getURL()	{
 		return 'https://github.com/Lord-Matt-NucleusCMS-Stuff/NP_ModComments'; 
 	}
  
-	function getVersion() {
-		return '2.0.1'; 
+	public function getVersion() {
+		return '2.1.0'; 
 	}
  
-	function getDescription() { 
+	public function getDescription() { 
 		return 'Meta-Moderation for comments plugin. A plugin that 
-                    allows logged in users to moderate comments.';
+                    allows logged in users to moderate comments. Now even faster 
+                    and with mean average';
 	}
  
-        function getTableList() { 
+        public function getTableList() { 
             return array( 
                     sql_table('plugin_modcomments')
             ); 
@@ -59,7 +66,7 @@ class NP_ModComments extends NucleusPlugin {
          * NOTE: If the table already exists the table will need to be updaated
          * to have a recordID as autoincriment primary key
          */
-	function install() {
+	public function install() {
 		sql_query ('CREATE TABLE IF NOT EXISTS `' . sql_table('plugin_modcomments') . '` (
                 `recordID` int(11) NOT NULL AUTO_INCREMENT,
                 `commentid` int(11) DEFAULT NULL,
@@ -78,7 +85,13 @@ class NP_ModComments extends NucleusPlugin {
                         'textarea', 
                         ''
                 );
-                
+                $this->createOption(
+                        "NMM",
+                        "Message to show to non members, leave blank for none",
+                        'textarea', 
+                        ''
+                );
+                $this->createOption('Version', 'Version', 'textarea', '2.1', 'access=hidden');
         }            
  
  
@@ -87,7 +100,7 @@ class NP_ModComments extends NucleusPlugin {
          * @param string $what
          * @return int (sudo bool)
          */
-	function supportsFeature($what) {
+	public function supportsFeature($what) {
 		switch($what) {
 		case 'HelpPage':
 			return 1;
@@ -105,8 +118,21 @@ class NP_ModComments extends NucleusPlugin {
          * This function provides hard coded values which should be moved to
          * enable user editing.
          */
-        function init() {
+        public function init() {
 
+            // Possibly move this to function getEventList() as this is only run
+            // when updates are needed.
+            /*
+             * Now for upgrades
+             */
+            if(getOption('Version')=='2.1'){
+                // anyupdate?
+                // setOption('Version','2.2')
+            }
+            
+            
+            #Old presets- edit these yourself for now.
+            
                 $this->mod[0]['name'] = 'Insulting';
                 $this->mod[0]['score'] = -4;
 
@@ -136,7 +162,7 @@ class NP_ModComments extends NucleusPlugin {
         }
 
         
-        function doTemplateVar($item, $type='', $param1 = 'default value'){
+        public function doTemplateVar($item, $type='', $param1 = 'default value'){
             echo "<p><b>Error</b> The tempalte tag does not go here.</p>";
         }
         /**
@@ -147,7 +173,7 @@ class NP_ModComments extends NucleusPlugin {
          * @param object $comment
          * @param string $param1 
          */
-	function doTemplateCommentsVar($item, $comment, $param1){
+	public function doTemplateCommentsVar($item, $comment, $param1){
 		global $CONF, $member;
                 
 		switch ($param1) {
@@ -181,6 +207,11 @@ class NP_ModComments extends NucleusPlugin {
 			case 'votes':
 				echo $this->ModGetVotes($comment['commentid']);
 				break;
+			case 'mean':
+				echo $this->ModGetMean($comment['commentid']);
+				break;
+                            default :
+                                echo "<!-- ModComments($param1) was not recognised -->";
 		}
 	}
  
@@ -190,7 +221,7 @@ class NP_ModComments extends NucleusPlugin {
          * @global type $HTTP_REFERER
          * @param type $actionType 
          */
-	function doAction($actionType) {
+	public function doAction($actionType) {
 		global $member, $HTTP_REFERER;;
                 
 		$modvalue = requestVar('modcommentsselect');
@@ -232,7 +263,12 @@ class NP_ModComments extends NucleusPlugin {
          * @param type $commentid
          * @return boolean 
          */
-        function ModGetTop($commentid){
+        public function ModGetTop($commentid){
+            
+            if( isset($this->commentCache[$commentid]['top']) ){
+                return $this->commentCache[$commentid]['top'];
+            }
+            
             $sql = 'SELECT `score`, count(`score`) as count FROM `' . 
                     sql_table('plugin_modcomments') . 
                     '` WHERE `commentid`=' . 
@@ -248,7 +284,8 @@ class NP_ModComments extends NucleusPlugin {
 
             for($i=0;$i<count($this->mod);$i++) {
                     if ($this->mod[$i]['score'] == $score) {
-                            return $this->mod[$i]['name'];
+                        $this->commentCache[$commentid]['top']=$this->mod[$i]['name'];
+                        return $this->commentCache[$commentid]['top'];
                     }
             }
             
@@ -259,13 +296,19 @@ class NP_ModComments extends NucleusPlugin {
          * API to get the number of votes
          * @param type $commentid 
          */
-        function ModGetVotes($commentid){
+        public function ModGetVotes($commentid){
+            
+            if( isset($this->commentCache[$commentid]['votes']) ){
+                return $this->commentCache[$commentid]['votes'];
+            }
+            
             $sql = 'SELECT count(*) as `votes` FROM `' . 
                     sql_table('plugin_modcomments') . 
                     '` WHERE `commentid`=' . 
                     $commentid;
             $result = sql_query($sql);
-            return mysql_result($result, 0, 'votes');
+            $this->commentCache[$commentid]['votes']=mysql_result($result, 0, 'votes');
+            return $this->commentCache[$commentid]['votes'];
         }
         
         /**
@@ -273,7 +316,12 @@ class NP_ModComments extends NucleusPlugin {
          * @param type $commentid
          * @return int 
          */
-        function ModGetScore($commentid){
+        public function ModGetScore($commentid){
+            
+            if( isset($this->commentCache[$commentid]['score']) ){
+                return $this->commentCache[$commentid]['score'];
+            }
+            
             $sql ='SELECT sum(`score`) as `score` FROM `' . 
                     sql_table('plugin_modcomments') . 
                     '` WHERE `commentid`=' . $commentid;
@@ -283,7 +331,26 @@ class NP_ModComments extends NucleusPlugin {
             } else {
                 $score=0;
             }
-            return $score;
+            $this->commentCache[$commentid]['score'] = $score;
+            return $this->commentCache[$commentid]['score'];
+        }
+        
+        /**
+         * API to get the mean average
+         * @param type $commentid
+         * @return type 
+         */
+        public function ModGetMean($commentid){
+                       
+            if( isset($this->commentCache[$commentid]['mean']) ){
+                return $this->commentCache[$commentid]['mean'];
+            }
+            
+            $votes = $this->ModGetVotes($commentid);
+            $score = $this->ModGetScore($commentid);
+            if($votes!=0 && $score!=0){
+                $this->commentCache[$commentid]['mean'] = number_format($score/$votes, 2, '.', '');
+            }
         }
 }
 
