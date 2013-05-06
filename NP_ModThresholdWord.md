@@ -1,6 +1,8 @@
 You can use NP_ModThreasholdWord to autohide comments that are marked down too low
 You can also use it to highlight great comments.
 
+The example JS here has a tiny bug in that the first click wont count.
+
 EXAMPLE COMMENT TEMPLATE:
 
 <div class="itemcomment id<%memberid%>">
