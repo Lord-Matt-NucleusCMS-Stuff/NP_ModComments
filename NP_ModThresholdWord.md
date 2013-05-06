@@ -11,7 +11,7 @@ title="<%ip%> | Click to visit <%user%>'s website or send an email">
 <%user%></a> wrote this <%ModThresholdWord(7)%> comment:</h3>
 <p><%ModComments(form)%></p>
 <p>Rated <%ModComments(score)%> <%ModComments(top)%> with <%ModComments(votes)%> votes</p>
-<div class="js"><p><a href="#sh<%commentid%>" onclick="document.getElementById('CC<%commentid%>').style.display = (document.getElementById('CC<%commentid%>').style.display == 'none') ? '' : 'none';
+<div class="js"><p><a href="#sh<%commentid%>" onclick="document.getElementById('CC<%commentid%>').style.display = (document.getElementById('CC<%commentid%>').style.display == 'none') ? 'block' : 'none';
 ">show/hide</a></p>
 </div>
 <div class="commentbody <%ModThresholdWord(0)%>" id="CC<%commentid%>">
