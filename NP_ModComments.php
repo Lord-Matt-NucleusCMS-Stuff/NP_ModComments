@@ -46,7 +46,7 @@ class NP_ModComments extends NucleusPlugin {
 	}
  
 	public function getVersion() {
-		return '2.1.0'; 
+		return '2.1.1'; 
 	}
  
 	public function getDescription() { 
@@ -54,7 +54,11 @@ class NP_ModComments extends NucleusPlugin {
                     allows logged in users to moderate comments. Now even faster 
                     and with mean average';
 	}
- 
+        
+        /**
+         * Default method to access tables used/owned in DB
+         * @return array (of table names)
+         */
         public function getTableList() { 
             return array( 
                     sql_table('plugin_modcomments')
@@ -79,12 +83,7 @@ class NP_ModComments extends NucleusPlugin {
                 /*
                  * UPDATE TABLE IF NOT EXISTS ... (?)
                  */
-                $this->createOption(
-                        "NMM",
-                        "Message to show to non members, leave blank for none",
-                        'textarea', 
-                        ''
-                );
+
                 $this->createOption(
                         "NMM",
                         "Message to show to non members, leave blank for none",
@@ -125,7 +124,7 @@ class NP_ModComments extends NucleusPlugin {
             /*
              * Now for upgrades
              */
-            if(getOption('Version')=='2.1'){
+            if($this->getOption('Version')=='2.1'){
                 // anyupdate?
                 // setOption('Version','2.2')
             }
@@ -136,13 +135,13 @@ class NP_ModComments extends NucleusPlugin {
                 $this->mod[0]['name'] = 'Insulting';
                 $this->mod[0]['score'] = -4;
 
-                $this->mod[1]['name'] = 'Annoying';
+                $this->mod[1]['name'] = 'Off Topic';
                 $this->mod[1]['score'] = -3;
 
-                $this->mod[2]['name'] = 'Stupid';
+                $this->mod[2]['name'] = 'Unhelpful';
                 $this->mod[2]['score'] = -2;
 
-                $this->mod[3]['name'] = 'Offtopic';
+                $this->mod[3]['name'] = 'Bland';
                 $this->mod[3]['score'] = -1;
 
                 $this->mod[4]['name'] = 'Funny';
@@ -310,14 +309,14 @@ class NP_ModComments extends NucleusPlugin {
             $this->commentCache[$commentid]['votes']=mysql_result($result, 0, 'votes');
             return $this->commentCache[$commentid]['votes'];
         }
-        
+
         /**
          * API to get the score
          * @param type $commentid
          * @return int 
          */
         public function ModGetScore($commentid){
-            
+
             if( isset($this->commentCache[$commentid]['score']) ){
                 return $this->commentCache[$commentid]['score'];
             }
@@ -329,9 +328,10 @@ class NP_ModComments extends NucleusPlugin {
             if(mysql_num_rows($result)>0){
                 $score = mysql_result($result,0,'score');
             } else {
-                $score=0;
+                $score=0;// will never be used
             }
-            $this->commentCache[$commentid]['score'] = $score;
+            // add score to zero to be sure that no votes gives a value
+            $this->commentCache[$commentid]['score'] = 0+$score;
             return $this->commentCache[$commentid]['score'];
         }
         
