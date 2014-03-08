@@ -72,7 +72,7 @@ class NP_ModThresholdWord extends NucleusPlugin {
         }
         
         function doTemplateCommentsVar($item, $comment){
-                error_reporting(E_ALL);
+            error_reporting(E_ALL);
                 $MANAGER = MANAGER::instance();
                 //echo "<b>STARTING</b>\n";
                 $ModComments  =&  $MANAGER->getPlugin('NP_ModComments');
